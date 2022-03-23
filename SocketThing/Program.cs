@@ -14,7 +14,7 @@ namespace SocketThing
         static void Main(string[] args)
         {
             AppServer exampleServer = StartExample(5000);
-            AppServer testServer = StartTest(5001);
+            LineAppServer testServer = StartTest(5001);
 
 
             while (exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
@@ -24,9 +24,28 @@ namespace SocketThing
         }
 
 
-        static AppServer StartTest(int port)
+        static LineAppServer StartTest(int port)
         {
-            AppServer server = new AppServer();
+            LineAppServer server = new LineAppServer();
+
+
+            server.NewSessionConnected += new SessionHandler<LineAppSession>((LineAppSession session) =>
+            {
+                session.Send("Welcome to LineAppSession");
+            });
+
+
+            server.NewRequestReceived += new RequestHandler<LineAppSession, StringRequestInfo>((LineAppSession session, StringRequestInfo request) =>
+            {
+                session.Send($"{request.Key}: {request.Body}");
+            });
+
+
+            server.SessionClosed += new SessionHandler<LineAppSession, CloseReason>((LineAppSession session, CloseReason reason) =>
+            {
+                Console.WriteLine("bye!");
+            });
+
 
             if (!server.Setup(port))
             {
@@ -43,11 +62,15 @@ namespace SocketThing
         }
 
 
+
         static AppServer StartExample(int port)
         {
             AppServer appServer = new AppServer();
 
-            appServer.NewSessionConnected += new SessionHandler<AppSession>(appServer_NewSessionConnected);
+            appServer.NewSessionConnected += new SessionHandler<AppSession>((AppSession session) =>
+            {
+                session.Send("Welcome to SuperSocket Telnet Server");
+            });
 
             appServer.NewRequestReceived += new RequestHandler<AppSession, StringRequestInfo>(appServer_NewRequestReceived_Echo);
             appServer.NewRequestReceived += new RequestHandler<AppSession, StringRequestInfo>(appServer_NewRequestReceived);
@@ -80,10 +103,10 @@ namespace SocketThing
         }
 
 
-        static void appServer_NewSessionConnected(AppSession session)
-        {
-            session.Send("Welcome to SuperSocket Telnet Server");
-        }
+        //static void appServer_NewSessionConnected(AppSession session)
+        //{
+        //    session.Send("Welcome to SuperSocket Telnet Server");
+        //}
 
 
         static void appServer_NewRequestReceived(AppSession session, StringRequestInfo requestInfo)
@@ -117,6 +140,48 @@ namespace SocketThing
         {
             string p = string.Join(" ", requestInfo.Parameters);
             session.Send($"ECHO: '{requestInfo.Key}' '{requestInfo.Body}' '{p}'");
+        }
+    }
+
+
+    public class LineAppSession : AppSession<LineAppSession>
+    {
+        protected override void OnSessionStarted()
+        {
+            //this.Send("Welcome to SuperSocket Line Server");
+        }
+
+        protected override void HandleUnknownRequest(StringRequestInfo requestInfo)
+        {
+            this.Send("Unknow request");
+        }
+
+        protected override void HandleException(Exception e)
+        {
+            this.Send("Application error: {0}", e.Message);
+        }
+
+        protected override void OnSessionClosed(CloseReason reason)
+        {
+            //add you logics which will be executed after the session is closed
+            base.OnSessionClosed(reason);
+        }
+    }
+
+
+
+    public class LineRequestParser : IRequestInfoParser<StringRequestInfo>
+    {
+        public StringRequestInfo ParseRequestInfo(string source)
+        {
+            return new StringRequestInfo("line", source, null);
+        }
+    }
+
+    public class LineAppServer : AppServer<LineAppSession>
+    {
+        public LineAppServer() : base(new CommandLineReceiveFilterFactory(System.Text.Encoding.UTF8, new LineRequestParser()))
+        {
         }
     }
 }
