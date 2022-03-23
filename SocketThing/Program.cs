@@ -13,15 +13,58 @@ namespace SocketThing
     {
         static void Main(string[] args)
         {
-            AppServer exampleServer = StartExample(5000);
-            LineAppServer testServer = StartTest(5001);
+            Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
+            AppServer exampleServer = StartExample(5001);
+            LineAppServer testServer = StartTest(5002);
+            
 
 
-            while (exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
+            while (teltonikaServer?.State == ServerState.Running || exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
         }
+
+
+
+        static Teltonika.TeltonikaServer StartTeltonika(int port)
+        {
+            Teltonika.TeltonikaServer server = new Teltonika.TeltonikaServer();
+
+
+            //server.NewSessionConnected += new SessionHandler<LineAppSession>((LineAppSession session) =>
+            //{
+            //    session.Send("Welcome to LineAppSession");
+            //});
+
+
+            //server.NewRequestReceived += new RequestHandler<LineAppSession, StringRequestInfo>((LineAppSession session, StringRequestInfo request) =>
+            //{
+            //    session.Send($"{request.Key}: {request.Body}");
+            //});
+
+
+            //server.SessionClosed += new SessionHandler<LineAppSession, CloseReason>((LineAppSession session, CloseReason reason) =>
+            //{
+            //    Console.WriteLine("bye!");
+            //});
+
+
+            if (!server.Setup(port))
+            {
+                return null;
+            }
+
+            if (!server.Start())
+            {
+                return null;
+            }
+
+
+            return server;
+        }
+
+
 
 
         static LineAppServer StartTest(int port)
