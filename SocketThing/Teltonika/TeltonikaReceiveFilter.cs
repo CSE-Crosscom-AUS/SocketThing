@@ -105,7 +105,7 @@ namespace SocketThing.Teltonika
 
             var packet = decoder.DecodeTcpData();
 
-            foreach(var data in packet.AvlData.Data)
+            foreach (var data in packet.AvlData.Data)
             {
                 Console.WriteLine(DebugAvl(data));
             }
@@ -122,12 +122,20 @@ namespace SocketThing.Teltonika
             StringBuilder sb = new StringBuilder();
             try
             {
+                sb.AppendLine($"Priority is {sb.AppendLine(data.Priority)}");
+
+
                 sb.AppendLine($"Datetime: {data.DateTime}");
                 sb.AppendLine($"DateTime.Kind: {data.DateTime.Kind}");
                 sb.AppendLine();
 
                 float x = data.GpsElement.X;
                 float y = data.GpsElement.Y;
+                short alt = data.GpsElement.Altitude;
+
+                short speed = data.GpsElement.Speed;
+                short angle = data.GpsElement.Angle;
+
 
                 var s = data.GpsElement.Satellites;
 
@@ -135,12 +143,19 @@ namespace SocketThing.Teltonika
                 y /= 10000000;
 
                 sb.AppendLine($"GPS is {x} {y} ({s} satelites)");
+                sb.AppendLine($"altitude: {alt}");
+                sb.AppendLine($"speed: {speed}");
+                sb.AppendLine($"angle: {angle}");
                 sb.AppendLine();
 
                 foreach (var p in data.IoElement.Properties)
                 {
                     sb.AppendLine($"property {p.Id} is {p.Value}");
                 }
+
+
+
+                sb.AppendLine();
                 sb.AppendLine();
             }
             catch
