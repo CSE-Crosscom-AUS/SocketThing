@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32228.430
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketThing", "SocketThing\SocketThing.csproj", "{047DD61C-EAFB-48F8-8B28-ED7C0B429D1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Teltonika.Codec", "Teltonika.Codec\Teltonika.Codec.csproj", "{72314E7D-5A66-477D-AEF1-F25C444E8866}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{047DD61C-EAFB-48F8-8B28-ED7C0B429D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{047DD61C-EAFB-48F8-8B28-ED7C0B429D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{047DD61C-EAFB-48F8-8B28-ED7C0B429D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
