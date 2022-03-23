@@ -150,7 +150,7 @@ namespace SocketThing.Teltonika
 
                 foreach (var p in data.IoElement.Properties)
                 {
-                    sb.AppendLine($"property {p.Id} is {p.Value}");
+                    sb.AppendLine($"IoElement Property {p.Id} is {p.Value}");
                 }
 
 
