@@ -25,7 +25,7 @@ namespace SocketThing.Teltonika
     public class TeltonikaReceiveFilter : IReceiveFilter<TeltonikaRequestInfo>
     {
         byte[] buffer = new byte[4096];
-        int length = 0;
+        int bufferpos = 0;
 
         public int LeftBufferSize { get; private set; }
 
@@ -37,61 +37,80 @@ namespace SocketThing.Teltonika
         {
             Console.WriteLine($"Filter {offset} {length} {toBeCopied}");
 
-            if (length >= 2 && readBuffer[offset + 0] == 0x00 && readBuffer[offset + 1] == 0x0f)
+            rest = 0;
+
+            if (bufferpos + length > buffer.Length)
+            {
+                // we really just want to have the client disconnect here
+                // the data we've been sent by this device doesn't make sense
+                State = FilterState.Error;
+                //throw new Exception("data too long");
+                return default;
+            }
+
+            
+            Array.Copy(readBuffer, offset, buffer, bufferpos, length);
+
+            bufferpos += length;
+
+
+
+            if (bufferpos >= 2 && buffer[0] == 0x00 && buffer[1] == 0x0f)
             {
                 // IMEI packet
                 // [00 0F 38 36 37 36 34 38 30 34 33 30 30 38 35 35 34]
 
                 // get imei
-                if (length < 17)
+                if (bufferpos < 17)
                 {
-                    rest = length;
                     return default;
                 }
 
-                TeltonikaRequestInfo r = new TeltonikaRequestInfo();
-                r.IMEI = GetIMEI(readBuffer, offset, 17);
-                rest = length - 17;
-                Console.WriteLine($"rest is {rest}");
-                return r;
+                //if (bufferpos > 17)
+                //{
+                //    // we have trailing data, consider disconnecting
+                //}
 
+                TeltonikaRequestInfo r = new TeltonikaRequestInfo();
+                r.IMEI = GetIMEI(buffer, 0, 17);
+                Console.WriteLine($"got IMEI {r.IMEI}");
+
+                bufferpos = 0;
+
+                return r;
             }
-            else if (length >= 8 && readBuffer[offset + 0] == 0x00 && readBuffer[offset + 1] == 0x00 && readBuffer[offset + 2] == 0x00 && readBuffer[offset + 3] == 0x00)
+            else if (bufferpos >= 8 && buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] == 0x00 && buffer[3] == 0x00)
             {
-                byte[] len = { readBuffer[offset + 4], readBuffer[offset + 5], readBuffer[offset + 6], readBuffer[offset + 7] };
+                byte[] len = { buffer[4], buffer[5], buffer[6], buffer[7] };
                 int avlDataLength = global::Teltonika.Codec.BytesSwapper.Swap(BitConverter.ToInt32(len, 0));
 
                 int packetLength = 8 + avlDataLength + 4;
 
-                if (length < packetLength)
+                if (bufferpos < packetLength)
                 {
-                    rest = length;
                     return default;
                 }
 
-                Console.WriteLine($"More data! {length} {packetLength} {avlDataLength}");
-
-                Array.Copy(readBuffer, offset, buffer, 0, length);
+                //if (bufferpos > packetLength)
+                //{
+                //    // trailing data?
+                //    // consider disconnecting
+                //}
 
                 TeltonikaRequestInfo r = new TeltonikaRequestInfo();
                 r.Data = DecodeTcpPacket(buffer);
 
-                rest = length - packetLength;
+                bufferpos = 0;
+
                 return r;
             }
 
-
-            // should we try and disconnect if we get here and there's bad data?
-
-
-            rest = length;
             return default;
         }
 
         public void Reset()
         {
-            // FIXME
-            length = 0;
+            bufferpos = 0;
         }
 
 
@@ -103,30 +122,50 @@ namespace SocketThing.Teltonika
 
             var packet = decoder.DecodeTcpData();
 
+            foreach(var data in packet.AvlData.Data)
+            {
+                Console.WriteLine(DebugAvl(data));
+            }
+
+
+
+
+            return packet;
+        }
+
+        private static string DebugAvl(global::Teltonika.Codec.Model.AvlData data)
+        {
+
+            StringBuilder sb = new StringBuilder();
             try
             {
-                float x = packet.AvlData.Data.First().GpsElement.X;
-                float y = packet.AvlData.Data.First().GpsElement.Y;
+                sb.AppendLine($"Datetime: {data.DateTime}");
+                sb.AppendLine($"DateTime.Kind: {data.DateTime.Kind}");
+                sb.AppendLine();
 
-                var s = packet.AvlData.Data.First().GpsElement.Satellites;
+                float x = data.GpsElement.X;
+                float y = data.GpsElement.Y;
+
+                var s = data.GpsElement.Satellites;
 
                 x /= 10000000;
                 y /= 10000000;
 
-                Console.WriteLine($"GPS is {x} {y} ({s} satelites)");
+                sb.AppendLine($"GPS is {x} {y} ({s} satelites)");
+                sb.AppendLine();
 
-                foreach (var p in packet.AvlData.Data.First().IoElement.Properties)
+                foreach (var p in data.IoElement.Properties)
                 {
-                    Console.WriteLine($"property {p.Id} is {p.Value}");
+                    sb.AppendLine($"property {p.Id} is {p.Value}");
                 }
+                sb.AppendLine();
             }
             catch
             {
-                Console.WriteLine("GPS is error");
+                sb.AppendLine("GPS is error");
             }
 
-
-            return packet;
+            return sb.ToString();
         }
 
 
