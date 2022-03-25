@@ -17,6 +17,7 @@ namespace SocketThing.Teltonika
         protected override void OnSessionStarted()
         {
             //this.Send("Welcome to SuperSocket Teltonika Server");
+            Console.WriteLine($"New Session! {SessionID}");
         }
 
         protected override void HandleException(Exception e)
