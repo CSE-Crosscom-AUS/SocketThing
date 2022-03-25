@@ -154,6 +154,8 @@ namespace SocketThing.Teltonika
                 }
 
 
+                sb.AppendLine($"cid: {GetCID(data)}");
+
 
                 sb.AppendLine();
                 sb.AppendLine();
@@ -179,6 +181,40 @@ namespace SocketThing.Teltonika
             }
 
             return imei;
+        }
+
+        private static string GetCID(global::Teltonika.Codec.Model.AvlData data)
+        {
+            string cid = null;
+
+            var io219 = data.IoElement.Properties.FirstOrDefault(p => p.Id == 219);
+            var io220 = data.IoElement.Properties.FirstOrDefault(p => p.Id == 220);
+            var io221 = data.IoElement.Properties.FirstOrDefault(p => p.Id == 221);
+
+
+
+            // the cid is just ascii bytes (the first 20 bytes of io219, io220, io221
+            // it will only be here if the tracker has been configured to send it
+            // this is a weird way to convert it, but it works
+            if (io219.Value != null && io220.Value != null && io221.Value != null)
+            {
+                string raw_cid = io219.Value?.ToString("X2") + io220.Value?.ToString("X2") + io221.Value?.ToString("X2");
+
+                if (raw_cid.Length >= 40)
+                {
+                    cid = "";
+
+                    for (int i = 0; i < 40; i += 2)
+                    {
+                        if (raw_cid[i] == '3')
+                        {
+                            cid += raw_cid[i + 1];
+                        }
+                    }
+                }
+            }
+
+            return cid;
         }
     }
 }
