@@ -177,7 +177,10 @@ namespace SocketThing.Teltonika
             string imei = "";
             for (int i = 0; i < 15; i++)
             {
-                imei += bytess[5 + 2 * i];
+                if (bytess[4 + 2 * i] == '3')
+                {
+                    imei += bytess[5 + 2 * i];
+                }
             }
 
             return imei;
