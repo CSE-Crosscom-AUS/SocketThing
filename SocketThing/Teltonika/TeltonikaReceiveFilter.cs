@@ -122,7 +122,7 @@ namespace SocketThing.Teltonika
             StringBuilder sb = new StringBuilder();
             try
             {
-                sb.AppendLine($"Priority is {sb.AppendLine(data.Priority)}");
+                sb.AppendLine($"Priority is {data.Priority}");
 
 
                 sb.AppendLine($"Datetime: {data.DateTime}");
