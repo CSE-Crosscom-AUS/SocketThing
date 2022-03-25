@@ -31,7 +31,7 @@ namespace SocketThing.Teltonika
                 return default;
             }
 
-            
+
             Array.Copy(readBuffer, offset, buffer, bufferpos, length);
 
             bufferpos += length;
