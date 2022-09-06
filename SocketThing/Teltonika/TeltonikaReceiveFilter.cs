@@ -105,10 +105,19 @@ namespace SocketThing.Teltonika
 
             var packet = decoder.DecodeTcpData();
 
-            foreach (var data in packet.AvlData.Data)
+
+            if (packet.AvlData.Data != null)
             {
-                Console.WriteLine(DebugAvl(data));
+                foreach (var data in packet.AvlData.Data)
+                {
+                    Console.WriteLine(DebugAvl(data));
+                }
             }
+            else
+            {
+                Console.WriteLine("packet.AvlData.Data is null!");
+            }
+
 
 
 

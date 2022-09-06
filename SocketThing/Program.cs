@@ -1,11 +1,14 @@
 ﻿using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Teltonika.Codec.Model;
 
 namespace SocketThing
 {
@@ -13,10 +16,27 @@ namespace SocketThing
     {
         static void Main(string[] args)
         {
+            //byte[] command;
+
+            //command = TeltonikaCommand.MakeCodec12Command("getinfo");
+            //TeltonikaCommand.DebugByteArray(command);
+
+            //command = TeltonikaCommand.MakeCodec12Command($"odoset:{12345}");
+            //TeltonikaCommand.DebugByteArray(command);
+
+            Go();
+        }
+
+
+
+
+        static void Go()
+        {
+
             Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
             AppServer exampleServer = StartExample(5001);
             LineAppServer testServer = StartTest(5002);
-            
+
 
 
             while (teltonikaServer?.State == ServerState.Running || exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
@@ -24,7 +44,6 @@ namespace SocketThing
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
         }
-
 
 
         static Teltonika.TeltonikaServer StartTeltonika(int port)

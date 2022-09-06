@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketThing", "SocketThing\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Teltonika.Codec", "Teltonika.Codec\Teltonika.Codec.csproj", "{72314E7D-5A66-477D-AEF1-F25C444E8866}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{60819B5F-48FF-42BA-86B1-0CC82C3E8F67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72314E7D-5A66-477D-AEF1-F25C444E8866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60819B5F-48FF-42BA-86B1-0CC82C3E8F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60819B5F-48FF-42BA-86B1-0CC82C3E8F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60819B5F-48FF-42BA-86B1-0CC82C3E8F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60819B5F-48FF-42BA-86B1-0CC82C3E8F67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

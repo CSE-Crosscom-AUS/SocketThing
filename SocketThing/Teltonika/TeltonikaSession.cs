@@ -54,6 +54,17 @@ namespace SocketThing.Teltonika
                     IMEI = requestInfo.IMEI;
 
                     Console.WriteLine($"New Connection IMEI: {IMEI}");
+
+
+
+
+                    //global::Teltonika.Codec.Model.Command odo = new global::Teltonika.Codec.Model.Command(0x0C, System.Text.Encoding.ASCII.GetBytes("odoset:121212"));
+                    //byte[] message = global::Teltonika.Codec.Codecs.Codec12.Encode(odo);
+                    //this.Send(message, 0, message.Length);
+
+                    int distance_metres = 666666;
+                    byte[] command = TeltonikaCommand.MakeCodec12Command($"odoset:{distance_metres}");
+                    this.Send(command, 0, command.Length);
                 }
 
             }

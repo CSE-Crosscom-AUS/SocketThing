@@ -21,6 +21,5 @@ namespace SocketThing.Teltonika
                 session.AcknowledgeData(requestInfo);
             };
         }
-
     }
 }
