@@ -1,5 +1,6 @@
 ﻿using SuperSocket.SocketBase.Protocol;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -81,9 +82,11 @@ namespace SocketThing.Teltonika
                 //}
 
                 TeltonikaRequestInfo r = new TeltonikaRequestInfo();
-                r.Data = DecodeTcpPacket(buffer);
+                r.Data = DecodeTcpPacket(buffer, 0, packetLength);
 
                 bufferpos = 0;
+
+                Console.WriteLine($"Recieved: {BitConverter.ToString(buffer, 0, packetLength)}");
 
                 return r;
             }
@@ -98,9 +101,9 @@ namespace SocketThing.Teltonika
 
 
 
-        private static global::Teltonika.Codec.Model.TcpDataPacket DecodeTcpPacket(byte[] request)
+        private static global::Teltonika.Codec.Model.TcpDataPacket DecodeTcpPacket(byte[] request, int offset, int length)
         {
-            var reader = new global::Teltonika.Codec.ReverseBinaryReader(new System.IO.MemoryStream(request));
+            var reader = new global::Teltonika.Codec.ReverseBinaryReader(new System.IO.MemoryStream(request, offset, length));
             var decoder = new global::Teltonika.Codec.DataDecoder(reader);
 
             var packet = decoder.DecodeTcpData();
@@ -136,6 +139,7 @@ namespace SocketThing.Teltonika
 
                 sb.AppendLine($"Datetime: {data.DateTime}");
                 sb.AppendLine($"DateTime.Kind: {data.DateTime.Kind}");
+                sb.AppendLine($"Age: {DateTime.UtcNow - data.DateTime}");
                 sb.AppendLine();
 
                 float x = data.GpsElement.X;
@@ -160,6 +164,11 @@ namespace SocketThing.Teltonika
                 foreach (var p in data.IoElement.Properties)
                 {
                     sb.AppendLine($"IoElement Property {p.Id} is {p.Value}");
+
+                    if (p.Id == 216)
+                    {
+                        sb.AppendLine($"Age: {DateTime.UtcNow - data.DateTime}");
+                    }
                 }
 
 
@@ -227,6 +236,12 @@ namespace SocketThing.Teltonika
             }
 
             return cid;
+        }
+
+
+        public static string ByteArrayToHexString(byte[] ba)
+        {
+            return BitConverter.ToString(ba).Replace("-", "");
         }
     }
 }

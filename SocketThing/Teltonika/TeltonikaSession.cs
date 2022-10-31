@@ -2,8 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace SocketThing.Teltonika
 {
@@ -12,10 +15,15 @@ namespace SocketThing.Teltonika
         public string IMEI { get; set; }
 
         private bool AcknowledgedIMEI = false;
+        private int AcknowledgedReportCount = 0;
+        private int SendCount = 0;
+
 
 
         protected override void OnSessionStarted()
         {
+            Charset = Encoding.GetEncoding("ISO-8859-1");
+
             //this.Send("Welcome to SuperSocket Teltonika Server");
             Console.WriteLine($"New Session! {SessionID}");
         }
@@ -49,38 +57,90 @@ namespace SocketThing.Teltonika
                     byte[] response = new byte[] { 0x01 };
 
                     Console.WriteLine("Acknowledge IMEI");
-                    this.Send(response, 0, response.Length); // send 0x01?
+                    base.Send(response, 0, response.Length); // send 0x01?
+
                     AcknowledgedIMEI = true;
                     IMEI = requestInfo.IMEI;
 
                     Console.WriteLine($"New Connection IMEI: {IMEI}");
 
 
-
-
-                    //global::Teltonika.Codec.Model.Command odo = new global::Teltonika.Codec.Model.Command(0x0C, System.Text.Encoding.ASCII.GetBytes("odoset:121212"));
-                    //byte[] message = global::Teltonika.Codec.Codecs.Codec12.Encode(odo);
-                    //this.Send(message, 0, message.Length);
-
-                    int distance_metres = 666666;
-                    byte[] command = TeltonikaCommand.MakeCodec12Command($"odoset:{distance_metres}");
-                    this.Send(command, 0, command.Length);
+                    //this.Flush();
                 }
 
             }
             else
             {
+
+
+
                 Console.WriteLine($"More data! IMEI: {IMEI}");
                 //Int32 count = 1;
                 Int32 count = requestInfo.Data.AvlData.DataCount;
 
                 Console.WriteLine($"Acknowledge {count}");
 
-                byte[] response = BitConverter.GetBytes(global::Teltonika.Codec.BytesSwapper.Swap(count));
-                
+                if (count > 0)
+                {
+                    byte[] response = BitConverter.GetBytes(global::Teltonika.Codec.BytesSwapper.Swap(count));
 
-                this.Send(response, 0, response.Length); // send requestInfo.Data.DataCount as 32 bit int in the byte order specified in example
+                    base.Send(response, 0, response.Length); // send requestInfo.Data.DataCount as 32 bit int in the byte order specified in example
+
+                }
+
+                AcknowledgedReportCount += count;
+
+                //this.FlushOutput();
             }
         }
+
+
+        private Queue<(byte[], int, int)> outputQueue = new Queue<(byte[], int, int)>();
+
+        public override void Send(string message)
+        {
+            var b = Encoding.GetEncoding("ISO-8859-1").GetBytes(message);
+            this.Send(b, 0, b.Length);
+        }
+
+        public override void Send(byte[] data, int offset, int length)
+        {
+            outputQueue.Enqueue((data, offset, length));
+        }
+
+        public void FlushOutput()
+        {
+            if (!AcknowledgedIMEI)
+            {
+                return;
+            }
+
+            if (AcknowledgedReportCount <= 0)
+            {
+                return;
+            }
+
+            Console.WriteLine($"Flush {outputQueue.Count}!");
+
+            if (outputQueue.Count > 0)
+            {
+                var a = outputQueue.Dequeue();
+
+                string s = BitConverter.ToString(a.Item1, a.Item2, a.Item3).Replace("-", "");
+                Console.WriteLine($"Sending {SendCount}: " + s);
+                base.Send(a.Item1, a.Item2, a.Item3);
+                SendCount++;
+            }
+        }
+
+
+        public void CheckOutput()
+        {
+            if (DateTime.Now - this.LastActiveTime > TimeSpan.FromSeconds(2) && outputQueue.Count > 0 && AcknowledgedReportCount > 0)
+            {
+                FlushOutput();
+            }
+        }
+
     }
 }
