@@ -31,34 +31,45 @@ namespace SocketThing
         static void Go()
         {
 
-            Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
+            var cb = TeltonikaCommand.MakeCodec12Command("odoset:666000");
+            var cs = BitConverter.ToString(cb);
+            cs = cs.Replace("-", "");
+
+            Console.WriteLine(cs);
+
+            //Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
             AppServer exampleServer = StartExample(5001);
             LineAppServer testServer = StartTest(5002);
 
-            teltonikaServer.NewSessionConnected += (Teltonika.TeltonikaSession session) =>
+            //teltonikaServer.NewSessionConnected += (Teltonika.TeltonikaSession session) =>
+            //{
+            //    SendTestOdo(session);
+
+            //};
+
+
+
+
+            //while (teltonikaServer?.State == ServerState.Running || exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
+            //{
+            //    Thread.Sleep(TimeSpan.FromSeconds(5));
+
+
+            //    //if (teltonikaServer.GetAllSessions().Any())
+            //    //{
+            //    //    var s = teltonikaServer.GetAllSessions()?.First();
+
+            //    //    if (s != null)
+            //    //    {
+            //    //        SendTestOdo(s);
+            //    //    }
+            //    //}
+
+            //}
+
+            while (true)
             {
-                SendTestOdo(session);
-
-            };
-
-
-
-
-            while (teltonikaServer?.State == ServerState.Running || exampleServer?.State == ServerState.Running || testServer?.State == ServerState.Running)
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-
-
-                //if (teltonikaServer.GetAllSessions().Any())
-                //{
-                //    var s = teltonikaServer.GetAllSessions()?.First();
-
-                //    if (s != null)
-                //    {
-                //        SendTestOdo(s);
-                //    }
-                //}
-
+                Thread.Sleep(1000);
             }
         }
 
