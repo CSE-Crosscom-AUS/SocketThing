@@ -1,4 +1,5 @@
-﻿using SocketThing.Teltonika;
+﻿using SocketThing.IridiumSBD;
+using SocketThing.Teltonika;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using System;
@@ -6,6 +7,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -31,15 +33,16 @@ namespace SocketThing
         static void Go()
         {
 
-            var cb = TeltonikaCommand.MakeCodec12Command("odoset:666000");
-            var cs = BitConverter.ToString(cb);
-            cs = cs.Replace("-", "");
+            //var cb = TeltonikaCommand.MakeCodec12Command("odoset:666000");
+            //var cs = BitConverter.ToString(cb);
+            //cs = cs.Replace("-", "");
 
-            Console.WriteLine(cs);
+            //Console.WriteLine(cs);
 
             //Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
-            AppServer exampleServer = StartExample(5001);
-            LineAppServer testServer = StartTest(5002);
+            //AppServer exampleServer = StartExample(5001);
+            //LineAppServer testServer = StartTest(5002);
+            IridiumSBDServer iridiumSBDServer = new IridiumSBDServer(5010);
 
             //teltonikaServer.NewSessionConnected += (Teltonika.TeltonikaSession session) =>
             //{
