@@ -17,6 +17,9 @@ namespace Test
             IridiumSBDParser.Test();
 
             return;
+
+
+
             TcpListener tcp = new TcpListener(System.Net.IPAddress.Any, 5010);
 
             tcp.Start();
@@ -47,14 +50,14 @@ namespace Test
             int ThreadIndex = NextIndex();
 
             Thread thread = null;
-            
+
             thread = new Thread(() =>
             {
                 byte[] bytes = new byte[1024];
 
-                
+
                 BinaryReader sr = new BinaryReader(client.GetStream());
-                
+
                 while (true)
                 {
                     int count = sr.Read(bytes, 0, bytes.Length);

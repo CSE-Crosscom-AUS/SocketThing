@@ -20,8 +20,20 @@ namespace Test
     /// </summary>
     public static class IridiumSBDParser
     {
-        public static string ExampleDataHex = "01004C01001CF99DD263333030323334303634303730383330000018000059282DBC03000B0036A2B8193D120000000302001C 59282BA391F5ABCDBFDD0180000059282BA891F5ABCDBFDD0180000059282BA391F5AB";
-        public static byte[] ExampleData = ConvertHexStringToByteArray(ExampleDataHex);
+        public static string ExampleDataHex0 = "01004C01001CF99DD263333030323334303634303730383330000018000059282DBC03000B0036A2B8193D120000000302001C 59282BA391F5ABCDBFDD0180000059282BA891F5ABCDBFDD0180000059282BA391F5AB";
+        public static byte[] ExampleData0 = ConvertHexStringToByteArray(ExampleDataHex0);
+
+        public static string ExampleDataHex1 = "01-00-92-01-00-1C-13-10-CE-60-33-30-30-35-33-34-30-36-33-37-38-34-38-34-30-00-00-00-00-00-64-3F-7B-6F-03-00-0B-02-29-61-A4-93-28-7D-00-00-00-03-02-00-62-64-3F-79-7C-E8-A0-56-45-1A-E6-00-80-00-00-64-3F-79-CC-E8-A0-56-45-1A-E6-00-80-00-00-64-3F-7A-12-E8-A0-54-45-1A-E5-00-80-00-00-64-3F-7A-7D-E8-A0-53-45-1B-01-00-80-00-00-64-3F-7A-BF-E8-A0-57-45-1B-00-00-80-00-00-64-3F-7B-0D-E8-A0-57-45-1B-00-00-80-00-00-64-3F-7B-52-E8-A0-57-45-1B-00-00-80-00-00";
+        public static byte[] ExampleData1 = ConvertHexStringToByteArray(ExampleDataHex1);
+
+
+
+        public static string ExampleDataHex2 = "01-00-3E-01-00-1C-13-10-F1-35-33-30-30-35-33-34-30-36-33-37-38-34-38-34-30-00-00-01-00-00-64-3F-7B-A7-03-00-0B-02-29-63-4D-93-18-FA-00-00-00-02-02-00-0E-64-3F-7B-9E-E8-A0-57-45-1B-00-00-80-00-00";
+        public static byte[] ExampleData2 = ConvertHexStringToByteArray(ExampleDataHex2);
+
+
+        public static string ExampleDataHex3 = "01-00-5A-01-00-1C-13-11-75-69-33-30-30-35-33-34-30-36-33-37-38-34-38-34-30-00-00-02-00-00-64-3F-7C-6C-03-00-0B-02-29-66-56-93-22-67-00-00-00-07-02-00-2A-64-3F-7B-DA-E8-A0-57-45-1B-00-00-80-00-00-64-3F-7C-16-E8-A0-57-45-1B-00-00-80-00-00-64-3F-7C-57-E8-A0-68-45-1B-05-00-80-00-00";
+        public static byte[] ExampleData3 = ConvertHexStringToByteArray(ExampleDataHex3);
 
 
         public static byte[] ConvertHexStringToByteArray(string hexString)
@@ -30,6 +42,7 @@ namespace Test
             Console.WriteLine(hexString.Length);
 
             hexString = hexString.Replace(" ", "");
+            hexString = hexString.Replace("-", "");
 
             if (hexString.Length % 2 != 0)
             {
@@ -51,10 +64,31 @@ namespace Test
 
             SBDPacket sbd = new SBDPacket();
 
-            int pos = 0;
-            sbd.Decode(ExampleData, ref pos);
+            int pos;
 
+            pos = 0;
+            sbd.Decode(ExampleData0, ref pos);
             Console.WriteLine(sbd);
+            Console.WriteLine();
+
+            pos = 0;
+            sbd.Decode(ExampleData1, ref pos);
+            Console.WriteLine(sbd);
+            Console.WriteLine();
+
+            pos = 0;
+            sbd.Decode(ExampleData2, ref pos);
+            Console.WriteLine(sbd);
+            Console.WriteLine();
+
+
+            pos = 0;
+            sbd.Decode(ExampleData3, ref pos);
+            Console.WriteLine(sbd);
+            Console.WriteLine();
+
+
+
         }
     }
 
