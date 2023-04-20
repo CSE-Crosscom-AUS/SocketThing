@@ -14,7 +14,7 @@ namespace Test
         static void Main(string[] args)
         {
 
-            IridiumSBDParser.Test();
+            TeltonikaIridiumSBDParser.Test();
 
             return;
 

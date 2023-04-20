@@ -18,7 +18,7 @@ namespace Test
     /// see https://wiki.teltonika-gps.com/view/FMC640_Short_Burst_Data
     /// see https://wiki.teltonika-gps.com/view/Iridium_Edge_Communication_Protocol
     /// </summary>
-    public static class IridiumSBDParser
+    public static class TeltonikaIridiumSBDParser
     {
         public static string ExampleDataHex0 = "01004C01001CF99DD263333030323334303634303730383330000018000059282DBC03000B0036A2B8193D120000000302001C 59282BA391F5ABCDBFDD0180000059282BA891F5ABCDBFDD0180000059282BA391F5AB";
         public static byte[] ExampleData0 = ConvertHexStringToByteArray(ExampleDataHex0);
@@ -38,8 +38,8 @@ namespace Test
 
         public static byte[] ConvertHexStringToByteArray(string hexString)
         {
-            Console.WriteLine(hexString);
-            Console.WriteLine(hexString.Length);
+            //Console.WriteLine(hexString);
+            //Console.WriteLine(hexString.Length);
 
             hexString = hexString.Replace(" ", "");
             hexString = hexString.Replace("-", "");
@@ -62,7 +62,7 @@ namespace Test
         public static void Test()
         {
 
-            SBDPacket sbd = new SBDPacket();
+            TeltonikaIridiumSBDMessage sbd = new TeltonikaIridiumSBDMessage();
 
             int pos;
 
@@ -86,15 +86,12 @@ namespace Test
             sbd.Decode(ExampleData3, ref pos);
             Console.WriteLine(sbd);
             Console.WriteLine();
-
-
-
         }
     }
 
-    public class SBDPacket
+    public class TeltonikaIridiumSBDMessage
     {
-        public SBDPacket()
+        public TeltonikaIridiumSBDMessage()
         {
         }
 
@@ -163,11 +160,11 @@ namespace Test
             PayloadLength = GetUInt16(data, ref pos);
 
 
-            EdgePayload = new Edge[PayloadLength / 14];
+            EdgePayload = new TeltonikaIridiumSBDSingleReport[PayloadLength / 14];
 
             for (int i = 0; i < EdgePayload.Length; i++)
             {
-                EdgePayload[i] = new Edge();
+                EdgePayload[i] = new TeltonikaIridiumSBDSingleReport();
                 EdgePayload[i].Decode(data, ref pos);
             }
 
@@ -325,7 +322,7 @@ namespace Test
 
         public UInt32 Timestamp { get; set; }
 
-        public Edge[] EdgePayload { get; set; }
+        public TeltonikaIridiumSBDSingleReport[] EdgePayload { get; set; }
 
         public override string ToString()
         {
@@ -365,25 +362,25 @@ namespace Test
         }
     }
 
-    public class Edge
+    public class TeltonikaIridiumSBDSingleReport
     {
 
-        public Edge()
+        public TeltonikaIridiumSBDSingleReport()
         {
         }
 
 
         public void Decode(byte[] data, ref int position)
         {
-            UInt32 time = SBDPacket.GetUInt32(data, ref position);
+            UInt32 time = TeltonikaIridiumSBDMessage.GetUInt32(data, ref position);
 
             Timestamp = DateTimeOffset.FromUnixTimeSeconds(time);
 
             byte b1, b2, b3;
 
-            b1 = SBDPacket.GetByte(data, ref position);
-            b2 = SBDPacket.GetByte(data, ref position);
-            b3 = SBDPacket.GetByte(data, ref position);
+            b1 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
+            b2 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
+            b3 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
             //Console.WriteLine($"{b1:x} {b2:x} {b3:x}");
             double lat = (double)b1 * 256.0 * 256.0 + (double)b2 * 256.0 + (double)b3;
             lat /= 46603.375;
@@ -391,10 +388,10 @@ namespace Test
 
             Latitude = lat;
 
-            b1 = SBDPacket.GetByte(data, ref position);
-            b2 = SBDPacket.GetByte(data, ref position);
-            b3 = SBDPacket.GetByte(data, ref position);
-            Console.WriteLine($"{b1:x} {b2:x} {b3:x}");
+            b1 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
+            b2 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
+            b3 = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
+            //Console.WriteLine($"{b1:x} {b2:x} {b3:x}");
             double lon = (double)b1 * 256.0 * 256.0 + (double)b2 * 256.0 + (double)b3;
             lon /= 93206.75;
             lon -= 90.0;
@@ -402,13 +399,13 @@ namespace Test
             Longitude = lon;
 
 
-            Flags = SBDPacket.GetByte(data, ref position);
+            Flags = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
 
-            DIOStatus = SBDPacket.GetByte(data, ref position);
+            DIOStatus = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
 
-            byte reserved = SBDPacket.GetByte(data, ref position);
+            byte reserved = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
 
-            byte s = SBDPacket.GetByte(data, ref position);
+            byte s = TeltonikaIridiumSBDMessage.GetByte(data, ref position);
 
             if (s == 255)
             {
