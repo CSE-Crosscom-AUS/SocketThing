@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
@@ -66,15 +67,15 @@ namespace Test
 
             int pos;
 
-            pos = 0;
-            sbd.Decode(ExampleData0, ref pos);
-            Console.WriteLine(sbd);
-            Console.WriteLine();
+            //pos = 0;
+            //sbd.Decode(ExampleData0, ref pos);
+            //Console.WriteLine(sbd);
+            //Console.WriteLine();
 
-            pos = 0;
-            sbd.Decode(ExampleData1, ref pos);
-            Console.WriteLine(sbd);
-            Console.WriteLine();
+            //pos = 0;
+            //sbd.Decode(ExampleData1, ref pos);
+            //Console.WriteLine(sbd);
+            //Console.WriteLine();
 
             pos = 0;
             sbd.Decode(ExampleData2, ref pos);
@@ -82,10 +83,57 @@ namespace Test
             Console.WriteLine();
 
 
+            //pos = 0;
+            //sbd.Decode(ExampleData3, ref pos);
+            //Console.WriteLine(sbd);
+            //Console.WriteLine();
+        }
+
+
+        public static void Test2()
+        {
+
+            // update the timestamps of the message to now
+            long n = DateTimeOffset.Now.ToUnixTimeSeconds();
+            uint n2 = (uint)n;
+
+            byte[] b = BitConverter.GetBytes(n2);
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(b);
+            }
+            Buffer.BlockCopy(b, 0, ExampleData2, 30, b.Length);
+            int p = 51;
+
+            while (p < ExampleData2.Length - 4)
+            {
+                Buffer.BlockCopy(b, 0, ExampleData2, p, b.Length);
+
+                p += 14;
+            }
+
+
+            // decode and output updated message (debugging)
+            TeltonikaIridiumSBDMessage sbd = new TeltonikaIridiumSBDMessage();
+            int pos;
+
             pos = 0;
-            sbd.Decode(ExampleData3, ref pos);
+            sbd.Decode(ExampleData2, ref pos);
             Console.WriteLine(sbd);
             Console.WriteLine();
+
+
+
+            // send to datalistener
+            TcpClient tcp = new TcpClient();
+
+            tcp.Connect("127.0.0.1", 5010);
+
+            BinaryWriter bw = new BinaryWriter(tcp.GetStream());
+
+            bw.Write(ExampleData2, 0, ExampleData2.Length);
+
+            tcp.Close();
         }
     }
 
