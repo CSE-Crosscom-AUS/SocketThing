@@ -1,5 +1,4 @@
-﻿using SocketThing.IridiumSBD;
-using SocketThing.Teltonika;
+﻿using SocketThing.Teltonika;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using System;
@@ -39,10 +38,10 @@ namespace SocketThing
 
             //Console.WriteLine(cs);
 
-            //Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
-            //AppServer exampleServer = StartExample(5001);
-            //LineAppServer testServer = StartTest(5002);
-            IridiumSBDServer iridiumSBDServer = new IridiumSBDServer(5010);
+            Teltonika.TeltonikaServer teltonikaServer = StartTeltonika(5000);
+            AppServer exampleServer = StartExample(5001);
+            LineAppServer testServer = StartTest(5002);
+            //IridiumSBDServer iridiumSBDServer = new IridiumSBDServer(5010);
 
             //teltonikaServer.NewSessionConnected += (Teltonika.TeltonikaSession session) =>
             //{

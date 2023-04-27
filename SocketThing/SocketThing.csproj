@@ -79,11 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IridiumSBD\IridiumSBDReceiveFilter.cs" />
-    <Compile Include="IridiumSBD\IridiumSBDReceiveFilterFactory.cs" />
-    <Compile Include="IridiumSBD\IridiumSBDRequestInfo.cs" />
-    <Compile Include="IridiumSBD\IridiumSBDServer.cs" />
-    <Compile Include="IridiumSBD\IridiumSBDSession.cs" />
     <Compile Include="LineApp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
